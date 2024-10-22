@@ -3,36 +3,68 @@
 export default {
   data() {
     return {
-      message: '',
-      green_play: false,
-      blue_play: false,
-      greenImage: './assets/characters/vita_00.png',
-      blueImage: './assets/characters/doux_00.png',
+      message: 'Please choose an action',
       buttonDisabled: true,
-      preference: 'wear',
+      relation: Math.floor(Math.random() * 4),
+      target_type: Math.floor(Math.random() * 2), //0: doux; 1: vita
+      actionChosen: false,
+      action: '',
+      self_health_risk: Math.floor(Math.random() * 2), //0: low; 1: high
+      console: '',
     }
   },
   methods: {
-    toggle(agent_type) {
-      if (agent_type == 'doux') {
-        this.blue_play = !this.blue_play
-        this.green_play = false
+    chooseAction(action) {
+      if (action) {
+        this.action = 'wear'
+        this.console += 'You choose to wear a mask\n'
       } else {
-        this.green_play = !this.green_play
-        this.blue_play = false
+        this.action = 'notwear'
+        this.console += 'You choose not to wear a mask\n'
       }
+      this.actionChosen = true
 
-      if (this.blue_play){
-        this.message = 'Freedom agent'
-      } else if (this.green_play) {
-        this.message = 'Health agent'
-      } else {
-        this.message = ''
-      }
-      this.buttonDisabled = !(this.green_play || this.blue_play)
+      this.message = 'Please choose a rationale strategy'
     },
-    enterGame() {
-      this.$router.push('/map')
+    chooseRationale(strategy) {
+      if (strategy == 0) {
+        this.console += 'You choose to share all information: \n'
+      } else if (strategy == 1) {
+        this.console += 'You choose to share decision rules for this context: \n'
+      } else {
+        this.console += 'You choose to share decision rules aligned with THE values of you and the target for this context: \n'
+      }
+    },
+    goToStart() {
+      this.$router.push({ name: 'start' });
+    },
+  },
+  props:{
+    green_playing: Boolean,
+    preference: String,
+    location: String
+  },
+  computed: {
+    relationLabel() {
+      if (this.relation == 0) {
+        return 'Family'
+      } else if (this.relation == 1) {
+        return 'Friend'
+      } else if (this.relation == 2) {
+        return 'Colleague'
+      } else {
+        return 'Stranger'
+      }
+    },
+    riskLabel() {
+      if (this.self_health_risk == 0) {
+        return 'Low'
+      } else {
+        return 'High'
+      }
+    },
+    target_agent_type() {
+      return this.target_type == 0 ? 'freedom': 'health'
     }
   }
 }
@@ -42,34 +74,35 @@ export default {
 <template>
   <div class="grid-container align-center justify-center">
     <div class="grid-item header">
-      <h2>Playground </h2>
+      <h2>Someone who values {{target_agent_type}} more is nearby at the {{location}}</h2>
     </div>
-    <br/>
     <div class="content">
-      <div class="center">
-        <h4>Please choose your type of agent</h4>
+      <div class="grid-item characters">
+        <img v-if="target_type" src="./assets/characters/vita_05.png" width="90" height="90" />
+        <img v-else src="./assets/characters/doux_05.png" width="90" height="90" />
+      </div>
+      <div class="grid-item characters">
+        <img v-if="green_playing" src="./assets/characters/vita_01.png" width="130" height="130" />
+        <img v-else src="./assets/characters/doux_01.png" width="130" height="130" />
+        <p>Agent Viewpoint: <br/></p>
+        <p class="center">Relationship: {{relationLabel}} <br/> Infection Risk: {{riskLabel}}</p>
       </div>
       <div class="message-center">
         <h4>{{message}}</h4>
       </div>
-      <br/>
-      <div class="grid-item image">
-        <img v-if="green_play" src="./assets/characters/vita_21.png" width="125" height="125" @click="toggle('vita')"/>
-        <img v-else src="./assets/characters/vita_00.png" width="125" height="125" @click="toggle('vita')" />
-        <img v-if="blue_play" src="./assets/characters/doux_21.png" width="125" height="125" @click="toggle('doux')" />
-        <img v-else src="./assets/characters/doux_00.png" width="125" height="125" @click="toggle('doux')" />
+      <div class="grid-item buttons" v-if="!actionChosen">
+        <button @click="chooseAction(1)">Wear mask</button>
+        <button @click="chooseAction(0)">Not wear mask</button>
       </div>
-      <br/>
-      <div>Daily Preference:
-        <input type="radio" id="wear" value="wear" v-model="preference" />
-        <label for="wear">Wear Mask</label>
+      <div class="grid-item buttons" v-else>
 
-        <input type="radio" id="not_wear" value="not_wear" v-model="preference" />
-        <label for="not_wear">Not wear mask</label>
+        <button @click="chooseRationale(0)">Share All</button>
+        <button @click="chooseRationale(1)">Share Decision Rules</button>
+        <button @click="chooseRationale(2)">Share Value-Aligned Rules</button>
       </div>
-      <br/>
-      <div class="grid-item buttons">
-        <button :disabled="buttonDisabled" @click="enterGame">Enter</button>
+
+      <div class="console-align">
+        <p>{{console}}</p>
       </div>
     </div>
   </div>
@@ -80,19 +113,25 @@ export default {
   display: grid;
   grid-template-areas:
     "header"
-    "image"
-    "buttons";
+    "characters"
+    "buttons"
+    "console";
   gap: 20px;
   padding: 20px;
+
+  position: relative;
+  width:100%;
+  height:100%;
 }
 
 .header {
   grid-area: header;
   text-align: center;
+  width:100%;
 }
 
-.image {
-  grid-area: image;
+.characters {
+  grid-area: characters;
   display: flex;
   justify-content: center;
 }
@@ -102,6 +141,14 @@ export default {
   display: flex;
   justify-content: center;
   gap: 10px;
+  width:100%;
+}
+
+.console {
+  grid-area: console;
+  text-align: center;
+  justify-content: center;
+  width:100%;
 }
 
 button {
@@ -109,14 +156,77 @@ button {
   font-size: 16px;
 }
 
-.center {
+.message-center {
   text-align: center;
   border: 3px solid green;
 }
 
-.message-center {
-  text-align: center;
-  height:20px;
+.console-align {
+  text-align: left;
+  display: flex;
+  border: 1px solid #ccc;
+  width:100%;
+  white-space: pre-line;
 }
 
+.center {
+  text-align: center;
+}
+
+/* Main character */
+.character {
+  width: 50px;
+  height: 50px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* position: absolute; */
+  border-radius: 50%;
+}
+
+/* Position main character */
+.main-character {
+  /* top: 200px;
+  left: 200px; */
+
+  grid-area: characters;
+  display: flex;
+  justify-content: center;
+}
+
+/* Nearby character, close to the main character */
+.nearby-character {
+  /* top: 150px;
+  left: 470px; */
+
+  grid-area: characters;
+  display: flex;
+  justify-content: center;
+  vertical-align: top;
+  gap: 5px;
+}
+
+/* Faraway characters */
+.faraway-character {
+  /* top: 100px;
+  left: 400px; */
+
+  grid-area: characters;
+  display: flex;
+  justify-content: center;
+  vertical-align: top;
+  gap: 5px;
+}
+
+.faraway-character:nth-child(4) {
+  /* top: 350px;
+  left: 450px; */
+}
+
+.badge-notify{
+   position:relative;
+   text-align: center;
+   height:20px;
+  }
 </style>

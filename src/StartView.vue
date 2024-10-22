@@ -31,8 +31,8 @@ export default {
       }
       this.buttonDisabled = !(this.green_play || this.blue_play)
     },
-    enterGame() {
-      this.$router.push('/map')
+    enterLocation(loc) {
+      this.$router.push('/location/' + this.green_play + '/' + this.preference + '/' + loc)
     }
   }
 }
@@ -47,12 +47,14 @@ export default {
     <br/>
     <div class="content">
       <div class="center">
-        <h4>Please choose your type of agent</h4>
+        <h4 v-if="buttonDisabled">Please choose your type of agent</h4>
+        <h4 v-else="buttonDisabled">Please choose where to go</h4>
       </div>
+      <br/>
       <div class="message-center">
         <h4>{{message}}</h4>
       </div>
-      <br/>
+
       <div class="grid-item image">
         <img v-if="green_play" src="./assets/characters/vita_21.png" width="125" height="125" @click="toggle('vita')"/>
         <img v-else src="./assets/characters/vita_00.png" width="125" height="125" @click="toggle('vita')" />
@@ -69,8 +71,13 @@ export default {
       </div>
       <br/>
       <div class="grid-item buttons">
-        <button :disabled="buttonDisabled" @click="enterGame">Enter</button>
+        <button :disabled="buttonDisabled" @click="enterLocation('Home')">Home</button>
+        <button :disabled="buttonDisabled" @click="enterLocation('Office')">Office</button>
+        <button :disabled="buttonDisabled" @click="enterLocation('Party')">Party</button>
+        <button :disabled="buttonDisabled" @click="enterLocation('Park')">Park</button>
+        <button :disabled="buttonDisabled" @click="enterLocation('Hospital')">Hospital</button>
       </div>
+      <br/>
     </div>
   </div>
 </template>
@@ -84,6 +91,11 @@ export default {
     "buttons";
   gap: 20px;
   padding: 20px;
+
+  position: relative;
+  text-align: center;
+  width:100%;
+  height:100%;
 }
 
 .header {
