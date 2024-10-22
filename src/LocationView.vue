@@ -8,6 +8,7 @@ export default {
       relation: Math.floor(Math.random() * 4),
       target_type: Math.floor(Math.random() * 2), //0: doux; 1: vita
       actionChosen: false,
+      strategyChosen: false,
       action: '',
       self_health_risk: Math.floor(Math.random() * 2), //0: low; 1: high
       console: '',
@@ -23,6 +24,7 @@ export default {
         this.console += 'You choose not to wear a mask\n'
       }
       this.actionChosen = true
+      this.strategyChosen = false
 
       this.message = 'Please choose a rationale strategy'
     },
@@ -34,13 +36,19 @@ export default {
       } else {
         this.console += 'You choose to share decision rules aligned with THE values of you and the target for this context: \n'
       }
+      this.strategyChosen = true
     },
-    goToStart() {
+    restart() {
       this.$router.push({ name: 'start' });
     },
   },
   props:{
-    green_playing: Boolean,
+    //green_play: Boolean,
+    green_play: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
     preference: String,
     location: String
   },
@@ -65,6 +73,9 @@ export default {
     },
     target_agent_type() {
       return this.target_type == 0 ? 'freedom': 'health'
+    },
+    actor_agent_type() {
+      return this.green_play === 'true' ? 'Health': 'Freedom'
     }
   }
 }
@@ -82,23 +93,25 @@ export default {
         <img v-else src="./assets/characters/doux_05.png" width="90" height="90" />
       </div>
       <div class="grid-item characters">
-        <img v-if="green_playing" src="./assets/characters/vita_01.png" width="130" height="130" />
+        <img v-if="green_play == 'true'" src="./assets/characters/vita_01.png" width="130" height="130" />
         <img v-else src="./assets/characters/doux_01.png" width="130" height="130" />
-        <p>Agent Viewpoint: <br/></p>
+        <p>Agent ({{actor_agent_type}}) Viewpoint: <br/></p>
         <p class="center">Relationship: {{relationLabel}} <br/> Infection Risk: {{riskLabel}}</p>
       </div>
       <div class="message-center">
         <h4>{{message}}</h4>
       </div>
-      <div class="grid-item buttons" v-if="!actionChosen">
+      <div class="grid-item buttons" v-if="!actionChosen&!strategyChosen">
         <button @click="chooseAction(1)">Wear mask</button>
         <button @click="chooseAction(0)">Not wear mask</button>
       </div>
-      <div class="grid-item buttons" v-else>
-
+      <div class="grid-item buttons" v-else-if="actionChosen&!strategyChosen">
         <button @click="chooseRationale(0)">Share All</button>
         <button @click="chooseRationale(1)">Share Decision Rules</button>
         <button @click="chooseRationale(2)">Share Value-Aligned Rules</button>
+      </div>
+      <div class="grid-item buttons" v-else>
+        <button @click="restart">Restart</button>
       </div>
 
       <div class="console-align">

@@ -8,7 +8,7 @@ import LocationView from './LocationView.vue'
 const routes = [
   { path: '/', name: 'start', component: StartView },
   // { path: '/map', name: 'map', component: MapView },
-  { path: '/location/:green_playing/:preference/:location', name: 'location', component: LocationView, props: true },
+  { path: '/location/:green_play/:preference/:location', name: 'location', component: LocationView, props: true },
 ]
 
 const router = createRouter({
