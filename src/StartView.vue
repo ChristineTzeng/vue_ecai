@@ -66,8 +66,8 @@ export default {
         <input type="radio" id="wear" value="wear" v-model="preference" />
         <label for="wear">Wear Mask</label>
 
-        <input type="radio" id="not_wear" value="not_wear" v-model="preference" />
-        <label for="not_wear">Not wear mask</label>
+        <input type="radio" id="notwear" value="notwear" v-model="preference" />
+        <label for="notwear">Not wear mask</label>
       </div>
       <br/>
       <div class="grid-item buttons">
