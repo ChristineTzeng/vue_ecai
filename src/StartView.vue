@@ -47,7 +47,7 @@ export default {
     <br/>
     <div class="content">
       <div class="center">
-        <h4 v-if="buttonDisabled">Please choose your type of agent</h4>
+        <h4 v-if="buttonDisabled">Please choose the type of agent that aligns with your values</h4>
         <h4 v-else="buttonDisabled">Please choose where to go</h4>
       </div>
       <br/>

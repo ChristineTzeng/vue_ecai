@@ -1,31 +1,36 @@
 <script>
-//home office party park hospital
-const locationPayoffs = [[-0.5, 0.5],[0.5, -0.5],[-0.5, 0.5],[-1.0, 1.0],[1.0, -1.0]]
-//family friend colleague stranger
-const relationPayoffs = [[-1.0, 1.0],[-0.5, 0.5],[0.5, -0.5],[1.0, -1.0]]
-//family friend colleague stranger
-const sanctionPayoffs = [[1.0, -1.0],[0.75, -0.75],[0.5, -0.5],[0.25, -0.25]]
-//wear notwear
-const preferencePayoffs = [[1.0, 1.0, -1.0, -1.0],[-1.0, -1.0, 1.0, 1.0]]
-//wear not wear; no risk  high risk; action risk mapping
-const healthPayoffs = [[0.0, 1.0],[0.0, -1.0]]
-
 
 export default {
   data() {
     return {
       message: 'Please choose an action',
       buttonDisabled: true,
-      relation: Math.floor(Math.random() * 4),
-      target_type: Math.floor(Math.random() * 2), //0: doux; 1: vita
       actionChosen: false,
       strategyChosen: false,
       action: '',
       self_health_risk: Math.floor(Math.random() * 2), //0: low; 1: high
+      target_type: Math.floor(Math.random() * 2), //0: doux; 1: vita
+      target_preference: Math.floor(Math.random() * 2), //0: notwear; 1: wear
+      target_health_risk: Math.floor(Math.random() * 2), //0: low; 1: high
+      relation: Math.floor(Math.random() * 4),
       console: '',
       btn_text_all: '',
       btn_text_rules: '',
       btn_text_values: '',
+      shared_rationale: [],
+      best_action_before: '',
+      best_action_after: '',
+
+      //home office party park hospital
+      locationPayoffs: [[-0.5, 0.5], [0.5, -0.5], [-0.5, 0.5], [-1.0, 1.0], [1.0, -1.0]],
+      //family friend colleague stranger
+      relationPayoffs: [[-1.0, 1.0], [-0.5, 0.5], [0.5, -0.5], [1.0, -1.0]],
+      //family friend colleague stranger
+      sanctionPayoffs: [[1.0, -1.0], [0.75, -0.75], [0.5, -0.5], [0.25, -0.25]],
+      //wear notwear
+      preferencePayoffs: [[1.0, 1.0, -1.0, -1.0], [-1.0, -1.0, 1.0, 1.0]],
+      //wear not wear; no risk  high risk; action risk mapping
+      healthPayoffs: [[0.0, 1.0], [0.0, -1.0]],
     }
   },
   methods: {
@@ -83,33 +88,57 @@ export default {
         this.btn_text_values += 'their relationship is ' + this.relationLabel + ', '
       }
       this.btn_text_values += 'and the interaction takes place at ' + this.location
+
     },
     chooseRationale(strategy) {
       if (strategy == 0) {
-        this.console += 'You choose to share all information. \n'
+        this.console += 'You choose to share all information: \n'
       } else if (strategy == 1) {
-        this.console += 'You choose to share decision rules for this context. \n'
+        this.console += 'You choose to share decision rules for this context: \n'
       } else {
-        this.console += 'You choose to share decision rules aligned with the values of you and the target for this context. \n'
+        this.console += 'You choose to share decision rules aligned with the values of you and the target for this context: \n'
       }
       this.strategyChosen = true
       this.message = 'Please choose an action'
     },
-    calculatePayoff(action,preference,risk,relationship,location) {
-      //relation+location+values
-      const locationPayoffs = [[-0.5, 0.5],[0.5, -0.5],[-0.5, 0.5],[-1.0, 1.0],[1.0, -1.0]]
-      //family friend colleague stranger
-      const relationPayoffs = [[-1.0, 1.0],[-0.5, 0.5],[0.5, -0.5],[1.0, -1.0]]
-      //family friend colleague stranger
-      const sanctionPayoffs = [[1.0, -1.0],[0.75, -0.75],[0.5, -0.5],[0.25, -0.25]]
-      //wear notwear
-      const preferencePayoffs = [[1.0, 1.0, -1.0, -1.0],[-1.0, -1.0, 1.0, 1.0]]
-      //wear not wear; no risk  high risk; action risk mapping
-      const healthPayoffs = [[0.0, 1.0],[0.0, -1.0]]
+    chooseRationaleBackup(strategy) {
+      /*this.shared_rationale = [this.target_preference, this.target_health_risk, this.relation, this.location, this.target_type]
+      this.best_action_before = this.calculatePayoff(this.shared_rationale)
+      this.best_action_before += this.shared_rationale
+
+      if (strategy == 0) {
+        this.console += 'You choose to share all information: \n'
+        this.shared_rationale = [this.preference, this.self_health_risk, this.relationship, this.location, this.target_type]
+      } else if (strategy == 1) {
+        this.console += 'You choose to share decision rules for this context: \n'
+        if ((this.action == 'wear' & this.self_health_risk == 1) || (this.action == 'notwear' & this.self_health_risk == 1)) {
+          this.shared_rationale[1] = this.self_health_risk
+        }
+        if (this.action == this.preference) {
+          this.btn_text_rules += 'their preference is to ' + this.preference + ' a mask, '
+          this.shared_rationale[0] = this.preference
+        }
+      } else {
+        this.console += 'You choose to share decision rules aligned with the values of you and the target for this context: \n'
+        if (this.green_play || this.target_type == 1) {
+          if ((this.action == 'wear' & this.self_health_risk == 1) || (this.action == 'notwear' & this.self_health_risk == 1)) {
+            this.shared_rationale[1] = this.self_health_risk
+          }
+        }
+        if (!this.green_play || this.target_type == 0) {
+          if (this.action == this.preference) {
+            this.shared_rationale[0] = this.preference
+          }
+        }
+      }
+      this.best_action_after = this.calculatePayoff(this.shared_rationale)*/
+      this.strategyChosen = true
+      this.message = 'Please choose an action'
+
     },
     restart() {
       this.$router.push({ name: 'start' });
-    },
+    }
   },
   props:{
     green_play: {
@@ -144,6 +173,19 @@ export default {
     },
     actor_agent_type() {
       return this.green_play === 'true' ? 'Health': 'Freedom'
+    },
+    calculatePayoff(info) {
+      //this.console += info
+      //const locationPayoffs = [[-0.5, 0.5],[0.5, -0.5],[-0.5, 0.5],[-1.0, 1.0],[1.0, -1.0]]
+      //family friend colleague stranger
+      //const relationPayoffs = [[-1.0, 1.0],[-0.5, 0.5],[0.5, -0.5],[1.0, -1.0]]
+      //family friend colleague stranger
+      //const sanctionPayoffs = [[1.0, -1.0],[0.75, -0.75],[0.5, -0.5],[0.25, -0.25]]
+      //wear notwear
+      //const preferencePayoffs = [[1.0, 1.0, -1.0, -1.0],[-1.0, -1.0, 1.0, 1.0]]
+      //wear not wear; no risk  high risk; action risk mapping
+      //const healthPayoffs = [[0.0, 1.0],[0.0, -1.0]]
+
     }
   }
 }
@@ -154,7 +196,7 @@ export default {
   <div class="grid-container align-center justify-center">
     <div class="grid-item header">
       <h2>Someone who values {{target_agent_type}} more is nearby at the {{location}}</h2>
-      <p>Agent ({{actor_agent_type}}) Viewpoint: <br/></p>
+      <p>Viewpoint of your ({{actor_agent_type}}) Agent: <br/></p>
     </div>
     <div class="content">
       <div class="grid-item characters">
