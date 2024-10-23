@@ -31,6 +31,10 @@ export default {
     chooseRationale(strategy) {
       if (strategy == 0) {
         this.console += 'You choose to share all information: \n'
+        this.console += 'Choose to ' + this.action + ' mask due to \n'
+        this.console += 'The actor\'s perceived infection risk is '+ this.riskLabel + ', their preference is to ' + this.preference
+        + ' a mask, the other agent type prioritizes ' + this.target_agent_type + ', their relationship is ' + this.relationLabel
+        + ', and the interaction takes place at ' + this.location
       } else if (strategy == 1) {
         this.console += 'You choose to share decision rules for this context: \n'
       } else {
@@ -86,6 +90,7 @@ export default {
   <div class="grid-container align-center justify-center">
     <div class="grid-item header">
       <h2>Someone who values {{target_agent_type}} more is nearby at the {{location}}</h2>
+      <p>Agent ({{actor_agent_type}}) Viewpoint: <br/></p>
     </div>
     <div class="content">
       <div class="grid-item characters">
@@ -95,7 +100,7 @@ export default {
       <div class="grid-item characters">
         <img v-if="green_play == 'true'" src="./assets/characters/vita_01.png" width="130" height="130" />
         <img v-else src="./assets/characters/doux_01.png" width="130" height="130" />
-        <p>Agent ({{actor_agent_type}}) Viewpoint: <br/></p>
+
         <p class="center">Relationship: {{relationLabel}} <br/> Infection Risk: {{riskLabel}}</p>
       </div>
       <div class="message-center">
