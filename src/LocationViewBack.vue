@@ -14,6 +14,17 @@ const healthPayoffs = [[0.0, 1.0],[0.0, -1.0]]
 export default {
   data() {
     return {
+
+      locationPayoffs: [[-0.5, 0.5],[0.5, -0.5],[-0.5, 0.5],[-1.0, 1.0],[1.0, -1.0]],
+      //family friend colleague stranger
+      relationPayoffs: [[-1.0, 1.0],[-0.5, 0.5],[0.5, -0.5],[1.0, -1.0]],
+      //family friend colleague stranger
+      sanctionPayoffs : [[1.0, -1.0],[0.75, -0.75],[0.5, -0.5],[0.25, -0.25]],
+      //wear notwear
+      preferencePayoffs: [[1.0, 1.0, -1.0, -1.0],[-1.0, -1.0, 1.0, 1.0]],
+      //wear not wear; no risk  high risk; action risk mapping
+      healthPayoffs: [[0.0, 1.0],[0.0, -1.0]],
+
       message: 'Please choose an action',
       buttonDisabled: true,
       relation: Math.floor(Math.random() * 4),
@@ -23,6 +34,10 @@ export default {
       action: '',
       self_health_risk: Math.floor(Math.random() * 2), //0: low; 1: high
       console: '',
+      btn_text_all: '',
+      btn_text_rules: '',
+      btn_text_values: '',
+      evaluation: '',
     }
   },
   methods: {
@@ -38,65 +53,97 @@ export default {
       this.strategyChosen = false
 
       this.message = 'Please choose a rationale strategy'
+
+      //share all
+      this.btn_text_all += 'You choose to share all information. \n'
+      this.btn_text_all += 'Choose to ' + this.action + ' mask due to \n'
+      this.btn_text_all += 'The actor\'s perceived infection risk is '+ this.riskLabel + ', their preference is to ' + this.preference
+      + ' a mask, the other agent type prioritizes ' + this.target_agent_type + ', their relationship is ' + this.relationLabel
+      + ', and the interaction takes place at ' + this.location
+
+      //share Rules
+      this.btn_text_rules += 'You choose to share decision rules for this context. \n'
+      this.btn_text_rules += 'Choose to ' + this.action + ' mask due to \n'
+      if ((this.action == 'wear' & this.self_health_risk == 1) || (this.action == 'notwear' & this.self_health_risk == 1)) {
+        this.btn_text_rules += 'the actors perceived infection risk is '+ this.riskLabel + ', '
+      }
+      if (this.action == this.preference) {
+        this.btn_text_rules += 'their preference is to ' + this.preference + ' a mask, '
+      }
+      this.btn_text_rules += 'the other agent type prioritizes ' + this.target_agent_type + ', '
+      if ((relationPayoffs[this.relation][0] > 0 & self.action == 'wear') || (relationPayoffs[this.relation][1] > 0 & self.action == 'notwear')) {
+        this.btn_text_rules += 'their relationship is ' + this.relationLabel + ', '
+      }
+      this.btn_text_rules += 'and the interaction takes place at ' + this.location
+
+      //share values
+      this.btn_text_values += 'You choose to share decision rules aligned with the values of you and the target for this context. \n'
+      this.btn_text_values += 'Choose to ' + this.action + ' mask due to \n'
+      if (this.green_play || this.target_type == 1) {
+        if ((this.action == 'wear' & this.self_health_risk == 1) || (this.action == 'notwear' & this.self_health_risk == 1)) {
+          this.btn_text_values += 'the actors perceived infection risk is '+ this.riskLabel + ', '
+        }
+      }
+      if (!this.green_play || this.target_type == 0) {
+        if (this.action == this.preference) {
+          this.btn_text_values += 'their preference is to ' + this.preference + ' a mask, '
+        }
+      }
+
+      this.btn_text_values += 'the other agent type prioritizes ' + this.target_agent_type + ', '
+      if ((relationPayoffs[this.relation][0] > 0 & self.action == 'wear') || (relationPayoffs[this.relation][1] > 0 & self.action == 'notwear')) {
+        this.btn_text_values += 'their relationship is ' + this.relationLabel + ', '
+      }
+      this.btn_text_values += 'and the interaction takes place at ' + this.location
     },
     chooseRationale(strategy) {
       if (strategy == 0) {
-        this.console += 'You choose to share all information: \n'
-        this.console += 'Choose to ' + this.action + ' mask due to \n'
-        this.console += 'The actor\'s perceived infection risk is '+ this.riskLabel + ', their preference is to ' + this.preference
-        + ' a mask, the other agent type prioritizes ' + this.target_agent_type + ', their relationship is ' + this.relationLabel
-        + ', and the interaction takes place at ' + this.location
+        this.console += 'You choose to share all information. \n'
       } else if (strategy == 1) {
-        this.console += 'You choose to share decision rules for this context: \n'
-        this.console += 'Choose to ' + this.action + ' mask due to \n'
-        if ((this.action == 'wear' & this.self_health_risk == 1) || (this.action == 'notwear' & this.self_health_risk == 1)) {
-          this.console += 'the actors perceived infection risk is '+ this.riskLabel + ', '
-        }
-        if (this.action == this.preference) {
-          this.console += 'their preference is to ' + this.preference + ' a mask, '
-        }
-        this.console += 'the other agent type prioritizes ' + this.target_agent_type + ', '
-        if ((relationPayoffs[this.relation][0] > 0 & self.action == 'wear') || (relationPayoffs[this.relation][1] > 0 & self.action == 'notwear')) {
-          this.console += 'their relationship is ' + this.relationLabel + ', '
-        }
-        this.console += 'and the interaction takes place at ' + this.location
+        this.console += 'You choose to share decision rules for this context. \n'
       } else {
-        this.console += 'You choose to share decision rules aligned with the values of you and the target for this context: \n'
-        this.console += 'Choose to ' + this.action + ' mask due to \n'
-        if (this.green_play || this.target_type == 1) {
-          if ((this.action == 'wear' & this.self_health_risk == 1) || (this.action == 'notwear' & this.self_health_risk == 1)) {
-            this.console += 'the actors perceived infection risk is '+ this.riskLabel + ', '
-          }
-        } else if (!this.green_play || this.target_type == 0) {
-          if (this.action == this.preference) {
-            this.console += 'their preference is to ' + this.preference + ' a mask, '
-          }
-        }
-
-        this.console += 'the other agent type prioritizes ' + this.target_agent_type + ', '
-        if ((relationPayoffs[this.relation][0] > 0 & self.action == 'wear') || (relationPayoffs[this.relation][1] > 0 & self.action == 'notwear')) {
-          this.console += 'their relationship is ' + this.relationLabel + ', '
-        }
-        this.console += 'and the interaction takes place at ' + this.location
+        this.console += 'You choose to share decision rules aligned with the values of you and the target for this context. \n'
       }
+
       this.strategyChosen = true
       this.message = 'Please choose an action'
+      this.evaluation = this.calculatePayoff(this.preference, this.self_health_risk, this.relation, this.location)
+      this.console += this.evaluation
     },
-    calculatePayoff(action,preference,risk,relationship,location) {
+    calculatePayoff(preference, risk, relation, location) {
+
       //relation+location+values
-      const locationPayoffs = [[-0.5, 0.5],[0.5, -0.5],[-0.5, 0.5],[-1.0, 1.0],[1.0, -1.0]]
+      //const locationPayoffs = [[-0.5, 0.5],[0.5, -0.5],[-0.5, 0.5],[-1.0, 1.0],[1.0, -1.0]]
       //family friend colleague stranger
-      const relationPayoffs = [[-1.0, 1.0],[-0.5, 0.5],[0.5, -0.5],[1.0, -1.0]]
+      //const relationPayoffs = [[-1.0, 1.0],[-0.5, 0.5],[0.5, -0.5],[1.0, -1.0]]
       //family friend colleague stranger
-      const sanctionPayoffs = [[1.0, -1.0],[0.75, -0.75],[0.5, -0.5],[0.25, -0.25]]
+      //const sanctionPayoffs = [[1.0, -1.0],[0.75, -0.75],[0.5, -0.5],[0.25, -0.25]]
       //wear notwear
-      const preferencePayoffs = [[1.0, 1.0, -1.0, -1.0],[-1.0, -1.0, 1.0, 1.0]]
+      //const preferencePayoffs = [[1.0, 1.0, -1.0, -1.0],[-1.0, -1.0, 1.0, 1.0]]
       //wear not wear; no risk  high risk; action risk mapping
-      const healthPayoffs = [[0.0, 1.0],[0.0, -1.0]]
+      //const healthPayoffs = [[0.0, 1.0],[0.0, -1.0]]
+
+      //this.locationPayoffs[]
+      return 0
     },
     restart() {
       this.$router.push({ name: 'start' });
     },
+    goBack(state) {
+      if (state == 1) {
+        this.action = ''
+        this.actionChosen = false
+        this.message = 'Please choose an action \n'
+        this.btn_text_all = ''
+        this.btn_text_rules = ''
+        this.btn_text_values = ''
+        this.console += 'You go back to action selection \n'
+      } else {
+        this.strategyChosen = false
+        this.message = 'Please choose a rationale strategy'
+        this.console += 'You go back to rationale selection'
+      }
+    }
   },
   props:{
     green_play: {
@@ -104,8 +151,10 @@ export default {
       default: false,
       required: true
     },
-    preference: String,
-    location: String
+    //preference: String,
+    //location: String
+    preference: Number,
+    location: Number
   },
   computed: {
     relationLabel() {
@@ -117,6 +166,19 @@ export default {
         return 'Colleague'
       } else {
         return 'Stranger'
+      }
+    },
+    locationLabel() {
+      if (this.location == 0) {
+        return 'Home'
+      } else if (this.location == 1) {
+        return 'Office'
+      } else if (this.location == 2) {
+        return 'Party'
+      } else if (this.location == 3) {
+          return 'Park'
+      } else {
+        return 'Hospital'
       }
     },
     riskLabel() {
@@ -140,7 +202,7 @@ export default {
 <template>
   <div class="grid-container align-center justify-center">
     <div class="grid-item header">
-      <h2>Someone who values {{target_agent_type}} more is nearby at the {{location}}</h2>
+      <h2>Someone who values {{target_agent_type}} more is nearby at the {{this.locationLabel}}</h2>
       <p>Agent ({{actor_agent_type}}) Viewpoint: <br/></p>
     </div>
     <div class="content">
@@ -152,7 +214,7 @@ export default {
         <img v-if="green_play == 'true'" src="./assets/characters/vita_01.png" width="130" height="130" />
         <img v-else src="./assets/characters/doux_01.png" width="130" height="130" />
 
-        <p class="center">Relationship: {{relationLabel}} <br/> Infection Risk: {{riskLabel}}</p>
+        <p class="center">Relationship: {{relationLabel}} <br/> Your perceived infection risk is {{riskLabel}}</p>
       </div>
       <div class="message-center">
         <h4>{{message}}</h4>
@@ -162,9 +224,15 @@ export default {
         <button @click="chooseAction(0)">Not wear mask</button>
       </div>
       <div class="grid-item buttons" v-else-if="actionChosen&!strategyChosen">
-        <button @click="chooseRationale(0)">Share All</button>
-        <button @click="chooseRationale(1)">Share Decision Rules</button>
-        <button @click="chooseRationale(2)">Share Value-Aligned Rules</button>
+        <button @click="chooseRationale(0)">{{btn_text_all}}</button>
+        <button @click="chooseRationale(1)">{{btn_text_rules}}</button>
+        <button @click="chooseRationale(2)">{{btn_text_values}}</button>
+      </div>
+      <div class="grid-item buttons" v-if="actionChosen&!strategyChosen">
+        <button @click="goBack(1)">Back to Action Selection</button>
+      </div>
+      <div class="grid-item buttons" v-if="actionChosen&strategyChosen">
+        <button @click="goBack(2)">Back to Rationale Selection</button>
       </div>
       <div class="grid-item buttons" v-else>
         <button @click="restart">Restart</button>

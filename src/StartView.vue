@@ -9,7 +9,8 @@ export default {
       greenImage: './assets/characters/vita_00.png',
       blueImage: './assets/characters/doux_00.png',
       buttonDisabled: true,
-      preference: 'wear',
+      //preference: 'wear',
+      preference: 0,
     }
   },
   methods: {
@@ -63,19 +64,30 @@ export default {
       </div>
       <br/>
       <div>Daily Preference:
-        <input type="radio" id="wear" value="wear" v-model="preference" />
+        <!--<input type="radio" id="wear" value="wear" v-model="preference" />
         <label for="wear">Wear Mask</label>
 
         <input type="radio" id="notwear" value="notwear" v-model="preference" />
+        <label for="notwear">Not wear mask</label>-->
+
+        <input type="radio" id="wear" value=0 v-model="preference" />
+        <label for="wear">Wear Mask</label>
+
+        <input type="radio" id="notwear" value=1 v-model="preference" />
         <label for="notwear">Not wear mask</label>
       </div>
       <br/>
       <div class="grid-item buttons">
-        <button :disabled="buttonDisabled" @click="enterLocation('Home')">Home</button>
+        <!--<button :disabled="buttonDisabled" @click="enterLocation('Home')">Home</button>
         <button :disabled="buttonDisabled" @click="enterLocation('Office')">Office</button>
         <button :disabled="buttonDisabled" @click="enterLocation('Party')">Party</button>
         <button :disabled="buttonDisabled" @click="enterLocation('Park')">Park</button>
-        <button :disabled="buttonDisabled" @click="enterLocation('Hospital')">Hospital</button>
+        <button :disabled="buttonDisabled" @click="enterLocation('Hospital')">Hospital</button>-->
+        <button :disabled="buttonDisabled" @click="enterLocation(0)">Home</button>
+        <button :disabled="buttonDisabled" @click="enterLocation(1)">Office</button>
+        <button :disabled="buttonDisabled" @click="enterLocation(2)">Party</button>
+        <button :disabled="buttonDisabled" @click="enterLocation(3)">Park</button>
+        <button :disabled="buttonDisabled" @click="enterLocation(4)">Hospital</button>
       </div>
       <br/>
     </div>
